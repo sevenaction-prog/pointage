@@ -1,4 +1,4 @@
-name: Build SFL ConsultPresence APK
+name: Build SFL ConsultPresence Release APK
 
 on:
   push:
@@ -32,13 +32,33 @@ jobs:
         with:
           gradle-version: '8.13'
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --no-daemon --stacktrace
+      - name: Build unsigned release APK
+        run: gradle :app:assembleRelease --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Generate ephemeral release signing key
+        shell: bash
+        run: |
+          KS_PASS="$(openssl rand -hex 18)"
+          KEY_PASS="$(openssl rand -hex 18)"
+          echo "::add-mask::$KS_PASS"
+          echo "::add-mask::$KEY_PASS"
+          echo "KS_PASS=$KS_PASS" >> "$GITHUB_ENV"
+          echo "KEY_PASS=$KEY_PASS" >> "$GITHUB_ENV"
+          keytool -genkeypair -v             -keystore sfl-release-test.jks             -storepass "$KS_PASS"             -keypass "$KEY_PASS"             -alias sflrelease             -keyalg RSA             -keysize 3072             -validity 3650             -dname "CN=SFL Consulting, OU=ConsultPresence, O=SFL Consulting, L=Liege, C=BE"
+
+      - name: Sign release APK
+        shell: bash
+        run: |
+          $ANDROID_HOME/build-tools/35.0.0/apksigner sign             --ks sfl-release-test.jks             --ks-key-alias sflrelease             --ks-pass env:KS_PASS             --key-pass env:KEY_PASS             --out app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk             app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Verify release signature
+        run: |
+          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose --print-certs             app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk
+
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: sfl-consultpresence-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: sfl-consultpresence-v0.2-release
+          path: app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk
           if-no-files-found: error
           retention-days: 7
