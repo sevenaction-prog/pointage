@@ -7,3 +7,5 @@ Dépôt de build de l'application Android SFL ConsultPresence.
 - L'artefact attendu s'appelle `sfl-consultpresence-debug-apk`.
 
 Le build se lance automatiquement à chaque push sur `main` et peut aussi être relancé manuellement depuis l'onglet Actions.
+
+Build trigger: Android v0.6
