@@ -1,4 +1,4 @@
-name: Build SFL ConsultPresence Release APK
+name: Build SFL ConsultPresence Unsigned Release
 
 on:
   push:
@@ -36,43 +36,10 @@ jobs:
       - name: Build unsigned release APK
         run: gradle :app:assembleRelease --no-daemon --stacktrace
 
-      - name: Generate ephemeral release signing key
-        shell: bash
-        run: |
-          KS_PASS="$(openssl rand -hex 18)"
-          echo "::add-mask::$KS_PASS"
-          echo "KS_PASS=$KS_PASS" >> "$GITHUB_ENV"
-
-          keytool -genkeypair -v \
-            -storetype PKCS12 \
-            -keystore sfl-release-test.jks \
-            -storepass "$KS_PASS" \
-            -keypass "$KS_PASS" \
-            -alias sflrelease \
-            -keyalg RSA \
-            -keysize 3072 \
-            -validity 3650 \
-            -dname "CN=SFL Consulting, OU=ConsultPresence, O=SFL Consulting, L=Liege, C=BE"
-
-      - name: Sign release APK
-        shell: bash
-        run: |
-          $ANDROID_HOME/build-tools/35.0.0/apksigner sign \
-            --ks sfl-release-test.jks \
-            --ks-key-alias sflrelease \
-            --ks-pass env:KS_PASS \
-            --out app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk \
-            app/build/outputs/apk/release/app-release-unsigned.apk
-
-      - name: Verify release signature
-        run: |
-          $ANDROID_HOME/build-tools/35.0.0/apksigner verify --verbose --print-certs \
-            app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk
-
-      - name: Upload signed APK
+      - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
         with:
-          name: sfl-consultpresence-v0.2-release
-          path: app/build/outputs/apk/release/SFL-ConsultPresence-v0.2-release.apk
+          name: sfl-consultpresence-v0.2-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
           if-no-files-found: error
           retention-days: 7
