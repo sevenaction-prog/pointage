@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "be.sfl.pointage"
+    namespace = "be.sfl.consultpresence.cleanroom"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "be.sfl.consultpresence"
+        applicationId = "be.sfl.consultpresence.cleanroom"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 4
-        versionName = "0.2.1"
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0.0-cleanroom"
     }
 
     compileOptions {
