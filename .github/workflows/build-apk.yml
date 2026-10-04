@@ -1,4 +1,4 @@
-name: Build SFL ConsultPresence Unsigned Release
+name: Build Cleanroom APK
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK packages
+      - name: Install Android SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
@@ -33,27 +33,27 @@ jobs:
         with:
           gradle-version: '8.13'
 
-      - name: Build unsigned release APK
+      - name: Build clean release
         run: gradle :app:assembleRelease --no-daemon --stacktrace
 
-      - name: Prepare signing tool
+      - name: Upload unsigned APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: sfl-consultpresence-cleanroom-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Prepare apksigner
         run: |
           mkdir -p signing-tool
           cp $ANDROID_HOME/build-tools/35.0.0/apksigner signing-tool/apksigner
           cp $ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar signing-tool/apksigner.jar
 
-      - name: Upload unsigned APK
+      - name: Upload apksigner
         uses: actions/upload-artifact@v4
         with:
-          name: sfl-consultpresence-v0.2.1-unsigned
-          path: app/build/outputs/apk/release/app-release-unsigned.apk
-          if-no-files-found: error
-          retention-days: 7
-
-      - name: Upload apksigner tool
-        uses: actions/upload-artifact@v4
-        with:
-          name: android-apksigner-35
+          name: android-apksigner-35-cleanroom
           path: signing-tool
           if-no-files-found: error
           retention-days: 7
