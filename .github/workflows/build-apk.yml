@@ -36,10 +36,24 @@ jobs:
       - name: Build unsigned release APK
         run: gradle :app:assembleRelease --no-daemon --stacktrace
 
+      - name: Prepare signing tool
+        run: |
+          mkdir -p signing-tool
+          cp $ANDROID_HOME/build-tools/35.0.0/apksigner signing-tool/apksigner
+          cp $ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar signing-tool/apksigner.jar
+
       - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
         with:
-          name: sfl-consultpresence-v0.2-unsigned
+          name: sfl-consultpresence-v0.2.1-unsigned
           path: app/build/outputs/apk/release/app-release-unsigned.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload apksigner tool
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apksigner-35
+          path: signing-tool
           if-no-files-found: error
           retention-days: 7
