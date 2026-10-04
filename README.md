@@ -1,11 +1,11 @@
-# SFL ConsultPresence — Android
+# SFL ConsultPresence — Clean-room rebuild
 
-Dépôt de build de l'application Android SFL ConsultPresence.
+Reconstruction Android complète à partir de zéro.
 
-- `android-src.zip` contient le projet Android Kotlin / Jetpack Compose.
-- GitHub Actions décompresse le projet et génère automatiquement l'APK debug.
-- L'artefact attendu s'appelle `sfl-consultpresence-debug-apk`.
+- Package: `be.sfl.consultpresence.cleanroom`
+- Version: `1.0.0-cleanroom`
+- Aucune permission sensible
+- UI native Android, sans bibliothèque UI externe
+- Signature sonore SFL en mode démonstration
 
-Le build se lance automatiquement à chaque push sur `main` et peut aussi être relancé manuellement depuis l'onglet Actions.
-
-Build trigger: Android v0.6
+Le géorepérage réel doit être réactivé seulement après validation de l'installation de cette base propre.
